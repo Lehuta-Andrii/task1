@@ -6,9 +6,8 @@ import java.io.BufferedReader;
 import java.io.FileNotFoundException;
 import java.io.FileReader;
 import java.io.IOException;
-import java.util.ArrayList;
-import java.util.Arrays;
-import java.util.List;
+import java.util.Set;
+import java.util.TreeSet;
 
 import org.junit.Before;
 import org.junit.BeforeClass;
@@ -26,7 +25,7 @@ public class RWayTrieTest {
 	private static final String AUX_STRING = "aaaaaaaaaaaaaaaaaa";
 	private static final String WORD_PATTERN = "[a-z]+";
 	private static final String SPACES_PATTERN = "[ \t]";
-	private static List<String> testWords;
+	private static Set<String> testWords;
 	private RWayTrie trie;
 
 	/**
@@ -35,7 +34,7 @@ public class RWayTrieTest {
 	@BeforeClass
 	public static void startUp() {
 
-		testWords = new ArrayList<String>();
+		testWords = new TreeSet<String>();
 
 		try (BufferedReader fin = new BufferedReader(new FileReader(WORDS_FILE));) {
 
@@ -130,12 +129,9 @@ public class RWayTrieTest {
 	public void wordWithPrefixMethodTest() {
 		fillTree();
 
-		String[] wordsArray = testWords.toArray(new String[0]);
-		Arrays.sort(wordsArray);
-
-		for (int i = 0; i < testWords.size(); i++) {
-			for (String word : trie.wordsWithPrefix(testWords.get(i).substring(0, 2))) {
-				assertTrue(Arrays.binarySearch(wordsArray, word) >= 0);
+		for (String word : testWords) {
+			for (String prefixWords : trie.wordsWithPrefix(word.substring(0, 2))) {
+				assertTrue(testWords.contains(prefixWords));
 			}
 		}
 	}

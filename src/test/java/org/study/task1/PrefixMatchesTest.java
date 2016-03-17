@@ -8,12 +8,20 @@ import java.io.BufferedReader;
 import java.io.FileNotFoundException;
 import java.io.FileReader;
 import java.io.IOException;
-import java.util.ArrayList;
-import java.util.List;
+import java.util.Set;
+import java.util.TreeSet;
 
 import org.junit.Before;
 import org.junit.BeforeClass;
 import org.junit.Test;
+import org.junit.runner.RunWith;
+
+import static org.mockito.Mockito.*;
+
+import org.mockito.ArgumentMatcher;
+import org.mockito.InjectMocks;
+import org.mockito.Mock;
+import org.mockito.runners.MockitoJUnitRunner;
 
 /**
  * Class for testing of PrefixMatches table
@@ -21,6 +29,7 @@ import org.junit.Test;
  * @author Andrii_Lehuta
  *
  */
+@RunWith(MockitoJUnitRunner.class)
 public class PrefixMatchesTest {
 
 	private static final String WORDS_FILE = "src/test/resources/wiktionary.txt";
@@ -28,18 +37,24 @@ public class PrefixMatchesTest {
 	private static final String AUX_STRING = "aaaaaaaaaaaaaaaaaa";
 	private static final String WORD_PATTERN = "[a-z]+";
 	private static final String SPACES_PATTERN = "[ \t]";
-	private static List<String> testWords;
-	private static List<String> wordsWithKnownGroups;
+	private static Set<String> testWords;
+	private static Set<String> wordsWithKnownGroups;
 
 	private PrefixMatches dictionary;
 
+	@Mock
+	private Trie mockTrie;
+	
+	@InjectMocks
+	private PrefixMatches mockPrefixMatches;
+	
 	/**
 	 * Initializes list of prepared words for testing
 	 */
 	@BeforeClass
 	public static void startUp() {
 
-		testWords = new ArrayList<String>();
+		testWords = new TreeSet<String>();
 
 		try (BufferedReader fin = new BufferedReader(new FileReader(WORDS_FILE));) {
 
@@ -59,7 +74,7 @@ public class PrefixMatchesTest {
 			e.printStackTrace();
 		}
 
-		wordsWithKnownGroups = new ArrayList<String>();
+		wordsWithKnownGroups = new TreeSet<String>();
 
 		try (BufferedReader fin = new BufferedReader(new FileReader(CHECKED_WORDS_FILE));) {
 
@@ -88,6 +103,35 @@ public class PrefixMatchesTest {
 		dictionary = new PrefixMatches(new RWayTrie(new EnglishAlphabet()));
 	}
 
+	/**
+	 * Test if PrefixMatches calls trie add method fixed number of times
+	 */
+	@Test
+	public void prefixMatchesAddMehtodCallsTrieAddThreeTimes(){
+		mockPrefixMatches.add("one", "two", "three");
+		verify(mockTrie, times(3)).add((Tuple)argThat(new ArgumentMatcher<Tuple>(){
+		      public boolean matches(Object list) {
+		          return list.getClass().equals(Tuple.class);
+		      }
+		}));
+	}
+	
+	/**
+	 * Test if PrefixMatches wordsWithPrefix calls trie wordsWithPrefix
+	 */
+	@Test
+	public void wordsWithPrefixMethodCallsTrieWordWithPrefix(){
+		String testString = "any";
+		Trie spy = spy(new RWayTrie(new EnglishAlphabet()));
+		PrefixMatches localMockPrefixMatches = new PrefixMatches(spy);
+		
+		doReturn(new TreeSet<String>()).when(spy).wordsWithPrefix(testString);
+	
+		localMockPrefixMatches.wordsWithPrefix(testString);
+		
+		verify(spy).wordsWithPrefix(testString);
+	}
+	
 	/**
 	 * Checks add method of PrefixMatches by filling it with prepared words
 	 */
