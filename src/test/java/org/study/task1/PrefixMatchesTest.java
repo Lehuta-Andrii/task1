@@ -8,6 +8,7 @@ import java.io.BufferedReader;
 import java.io.FileNotFoundException;
 import java.io.FileReader;
 import java.io.IOException;
+import java.util.Iterator;
 import java.util.Set;
 import java.util.TreeSet;
 
@@ -44,10 +45,10 @@ public class PrefixMatchesTest {
 
 	@Mock
 	private Trie mockTrie;
-	
+
 	@InjectMocks
 	private PrefixMatches mockPrefixMatches;
-	
+
 	/**
 	 * Initializes list of prepared words for testing
 	 */
@@ -107,29 +108,29 @@ public class PrefixMatchesTest {
 	 * Test if PrefixMatches calls trie add method fixed number of times
 	 */
 	@Test
-	public void prefixMatchesAddMehtodCallsTrieAddThreeTimes(){
+	public void prefixMatchesAddMehtodCallsTrieAddThreeTimes() {
 		mockPrefixMatches.add("one", "two", "three");
-		verify(mockTrie, times(3)).add((Tuple)argThat(new ArgumentMatcher<Tuple>(){
-		      public boolean matches(Object list) {
-		          return list.getClass().equals(Tuple.class);
-		      }
+		verify(mockTrie, times(3)).add((Tuple) argThat(new ArgumentMatcher<Tuple>() {
+			public boolean matches(Object list) {
+				return list.getClass().equals(Tuple.class);
+			}
 		}));
 	}
-	
+
 	/**
 	 * Test if PrefixMatches wordsWithPrefix calls trie wordsWithPrefix
 	 */
 	@Test
-	public void wordsWithPrefixMethodCallsTrieWordWithPrefix(){
+	public void wordsWithPrefixMethodCallsTrieWordWithPrefix() {
 		String testString = "any";
 		Trie spy = spy(new RWayTrie(new EnglishAlphabet()));
 		PrefixMatches localMockPrefixMatches = new PrefixMatches(spy);
-		
+
 		localMockPrefixMatches.wordsWithPrefix(testString);
-		
+
 		verify(spy).wordsWithPrefix(testString);
 	}
-	
+
 	/**
 	 * Checks add method of PrefixMatches by filling it with prepared words
 	 */
@@ -186,28 +187,37 @@ public class PrefixMatchesTest {
 
 		dictionary.add(wordsWithKnownGroups.toArray(new String[0]));
 
-		for (String word : dictionary.wordsWithPrefix("en", 2)) {
+		Iterator<String> iterator = dictionary.wordsWithPrefix("end", 2).iterator();
+
+		while (iterator.hasNext()) {
 			counter++;
+			iterator.next();
 		}
+
 		assertTrue(counter == 2);
 
+		iterator = dictionary.wordsWithPrefix("ca", 3).iterator();
 		counter = 0;
-		for (String word : dictionary.wordsWithPrefix("ca", 3)) {
+		while (iterator.hasNext()) {
 			counter++;
+			iterator.next();
 		}
+
 		assertTrue(counter == 10);
 
+		iterator = dictionary.wordsWithPrefix("de", 4).iterator();
 		counter = 0;
-		for (String word : dictionary.wordsWithPrefix("de", 4)) {
+		while (iterator.hasNext()) {
 			counter++;
+			iterator.next();
 		}
+
 		assertTrue(counter == 22);
 
 	}
 
 	private void fillPrefixMatches() {
 		dictionary.add(testWords.toArray(new String[0]));
-
 	}
 
 }
