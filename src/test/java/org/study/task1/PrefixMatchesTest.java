@@ -125,8 +125,6 @@ public class PrefixMatchesTest {
 		Trie spy = spy(new RWayTrie(new EnglishAlphabet()));
 		PrefixMatches localMockPrefixMatches = new PrefixMatches(spy);
 		
-		doReturn(new TreeSet<String>()).when(spy).wordsWithPrefix(testString);
-	
 		localMockPrefixMatches.wordsWithPrefix(testString);
 		
 		verify(spy).wordsWithPrefix(testString);

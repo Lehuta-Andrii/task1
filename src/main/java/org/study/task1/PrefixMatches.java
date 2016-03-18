@@ -1,5 +1,6 @@
 package org.study.task1;
 
+import java.util.Collections;
 import java.util.Iterator;
 import java.util.LinkedList;
 import java.util.List;
@@ -96,7 +97,7 @@ public class PrefixMatches {
 	public Iterable<String> wordsWithPrefix(String pref, int k) {
 
 		if (k == 0) {
-			return new LinkedList<String>();
+			return Collections.emptyList();
 		}
 
 		List<String> result = new LinkedList<String>();
@@ -104,8 +105,6 @@ public class PrefixMatches {
 
 		if (iterator.hasNext()) {
 			result.add(iterator.next());
-		} else {
-			return new LinkedList<String>();
 		}
 
 		while (iterator.hasNext()) {

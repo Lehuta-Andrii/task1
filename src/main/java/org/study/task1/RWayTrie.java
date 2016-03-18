@@ -240,6 +240,11 @@ public class RWayTrie implements Trie {
 	 *            - queue that will contain the words with specified prefix
 	 */
 	private void collect(Node x, String pref, Queue<String> queue) {
+		
+		if(x == null){
+			return;
+		}
+		
 		class Pair {
 			Node first;
 			String second;
