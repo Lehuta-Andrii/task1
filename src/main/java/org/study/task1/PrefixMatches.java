@@ -1,9 +1,7 @@
 package org.study.task1;
 
-import java.util.Collections;
 import java.util.Iterator;
-import java.util.LinkedList;
-import java.util.List;
+import java.util.NoSuchElementException;
 
 /**
  * The PrefixMatches class provides the function of auto completion for words of
@@ -17,9 +15,11 @@ import java.util.List;
  * @author Andrii_Lehuta
  *
  */
-public class PrefixMatches {
+public class PrefixMatches implements Iterable<String>{
 
 	private Trie trie;
+	private String iteratorPrefix;
+	private int iteratorK;
 
 	/**
 	 * Consrtucts table with the help of specified trie
@@ -96,7 +96,10 @@ public class PrefixMatches {
 	 */
 	public Iterable<String> wordsWithPrefix(String pref, int k) {
 
-		if (k == 0) {
+		iteratorK = k;
+		iteratorPrefix = pref;
+		
+	/*	if (k == 0) {
 			return Collections.emptyList();
 		}
 
@@ -123,7 +126,8 @@ public class PrefixMatches {
 
 		}
 
-		return result;
+		return result;*/
+		return this;
 	}
 
 	/**
@@ -137,6 +141,52 @@ public class PrefixMatches {
 	 */
 	public Iterable<String> wordsWithPrefix(String pref) {
 		return wordsWithPrefix(pref, 3);
+	}
+
+	private class PrefixMatchesIterator implements Iterator<String>{
+
+		private Iterator<String> RWayIterator;
+		private int k;
+		private String prevWord = "";
+		
+		public PrefixMatchesIterator(int k, String pref){
+			RWayIterator = trie.wordsWithPrefix(pref).iterator();
+			this.k = k;
+		}
+
+		@Override
+		public boolean hasNext() {
+			return RWayIterator.hasNext() && k != 0;
+		}
+
+		@Override
+		public String next() {
+			
+			if(k == 0 || !RWayIterator.hasNext()){
+				throw new NoSuchElementException();
+			}
+			
+			String result = RWayIterator.next();
+			
+			if(result.length() > prevWord.length()){
+				k--;
+			}
+			
+			prevWord = result;
+			
+			return result;
+		}
+		
+	}
+	
+	@Override
+	public Iterator<String> iterator() {
+		Iterator<String> iter = new PrefixMatchesIterator(iteratorK, iteratorPrefix);
+		iteratorK = 3;
+		iteratorPrefix = "";
+		
+		return iter;
+		
 	}
 
 }

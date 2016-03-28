@@ -1,6 +1,8 @@
 package org.study.task1;
 
+import java.util.Iterator;
 import java.util.LinkedList;
+import java.util.NoSuchElementException;
 import java.util.Queue;
 
 /**
@@ -14,12 +16,15 @@ import java.util.Queue;
  * 
  * @author Andrii_Lehuta
  */
-public class RWayTrie implements Trie {
+public class RWayTrie implements Trie, Iterable<String>{
 
 	private static int SIZE; // Alphabet size
 	private int trieSize = 0; // Size of the trie
 	private Node root;
 	private Alphabet alphabet;
+	
+	private Node iteratorRootNode;
+	private String iteratorPrefix;
 
 	/**
 	 * Private class that is used for representation of node trie structure.
@@ -82,6 +87,8 @@ public class RWayTrie implements Trie {
 		this.alphabet = alphabet;
 		SIZE = alphabet.size();
 		root = new Node();
+		iteratorRootNode = root;
+		iteratorPrefix = "";
 	}
 
 	/**
@@ -225,7 +232,8 @@ public class RWayTrie implements Trie {
 	 */
 	@Override
 	public Iterable<String> words() {
-		return wordsWithPrefix("");
+		return this;
+		//return wordsWithPrefix("");
 	}
 
 	/**
@@ -284,9 +292,11 @@ public class RWayTrie implements Trie {
 	 */
 	@Override
 	public Iterable<String> wordsWithPrefix(String pref) {
-		Queue<String> q = new LinkedList<String>();
-		collect(get(root, pref), pref, q);
-		return q;
+		//Queue<String> q = new LinkedList<String>();
+		//collect(get(root, pref), pref, q);
+		iteratorRootNode = get(root, pref);
+		iteratorPrefix = pref;
+		return this;
 	}
 
 	/**
@@ -297,6 +307,62 @@ public class RWayTrie implements Trie {
 	@Override
 	public int size() {
 		return trieSize;
+	}
+
+	
+	private class RWayTrieIterator implements Iterator<String>{
+
+		private Queue<String> words = new LinkedList<String>();
+		private Queue<Node> nodes = new LinkedList<Node>();
+		
+		public RWayTrieIterator(Node root, String pref) {
+			nodes.add(root);
+			words.add(pref);
+		}
+
+		@Override
+		public boolean hasNext() {
+			return !nodes.isEmpty();
+		}
+
+		@Override
+		public String next() {
+			
+			if(nodes.isEmpty()){
+				throw new NoSuchElementException();
+			}
+			
+			String result = null;
+			
+			while(!nodes.isEmpty() && result == null) {
+				Node node = nodes.poll();
+				String tmpWord = words.poll();
+
+				if(node.value != 0){
+					result = tmpWord;
+				}
+		
+				for (int i = 0; i < node.next.length; i++) {
+					if (node.next[i] != null) {
+						nodes.add(node.next[i]);
+						words.add(tmpWord + alphabet.charcter(i));
+					}
+				}
+			}
+			
+			return result;
+		}
+		
+	}
+	
+	
+	
+	@Override
+	public Iterator<String> iterator() {
+		Iterator<String> iter = new RWayTrieIterator(iteratorRootNode, iteratorPrefix);
+		iteratorRootNode = root;
+		iteratorPrefix = "";
+		return iter;
 	}
 
 }
