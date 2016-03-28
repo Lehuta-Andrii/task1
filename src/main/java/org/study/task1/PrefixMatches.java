@@ -18,9 +18,7 @@ import java.util.NoSuchElementException;
 public class PrefixMatches implements Iterable<String>{
 
 	private Trie trie;
-	private String iteratorPrefix;
-	private int iteratorK;
-
+	
 	/**
 	 * Consrtucts table with the help of specified trie
 	 * 
@@ -95,39 +93,14 @@ public class PrefixMatches implements Iterable<String>{
 	 * @return iterable object that contains k or less group of words
 	 */
 	public Iterable<String> wordsWithPrefix(String pref, int k) {
-
-		iteratorK = k;
-		iteratorPrefix = pref;
 		
-	/*	if (k == 0) {
-			return Collections.emptyList();
-		}
+		return new Iterable<String>(){
 
-		List<String> result = new LinkedList<String>();
-		Iterator<String> iterator = trie.wordsWithPrefix(pref).iterator();
-
-		if (iterator.hasNext()) {
-			result.add(iterator.next());
-		}
-
-		while (iterator.hasNext()) {
-
-			String word = iterator.next();
-
-			if (word.length() > result.get(result.size() - 1).length()) {
-				k--;
+			public Iterator<String> iterator() {
+				return new PrefixMatchesIterator(pref,k);
 			}
-
-			if (k == 0) {
-				break;
-			}
-
-			result.add(word);
-
-		}
-
-		return result;*/
-		return this;
+			
+		};
 	}
 
 	/**
@@ -146,34 +119,47 @@ public class PrefixMatches implements Iterable<String>{
 	private class PrefixMatchesIterator implements Iterator<String>{
 
 		private Iterator<String> RWayIterator;
+		private String currentWord = "";
+		private String nextWord = "";
 		private int k;
-		private String prevWord = "";
 		
-		public PrefixMatchesIterator(int k, String pref){
+		public PrefixMatchesIterator(String pref, int k){
 			RWayIterator = trie.wordsWithPrefix(pref).iterator();
 			this.k = k;
+			
+			if(RWayIterator.hasNext()){
+				currentWord = RWayIterator.next();
+			}else{
+				this.k = 0;
+			}
 		}
 
 		@Override
 		public boolean hasNext() {
-			return RWayIterator.hasNext() && k != 0;
+			return k > 0;
 		}
 
 		@Override
 		public String next() {
 			
-			if(k == 0 || !RWayIterator.hasNext()){
+			if(k <= 0){
 				throw new NoSuchElementException();
 			}
 			
-			String result = RWayIterator.next();
-			
-			if(result.length() > prevWord.length()){
-				k--;
+			if(RWayIterator.hasNext()){
+				nextWord = RWayIterator.next();
+				
+				if(currentWord.length() < nextWord.length()){
+					k--;
+				}
+				
+			}else{
+				k = 0;
 			}
 			
-			prevWord = result;
-			
+			String result = currentWord;
+			currentWord = nextWord;
+
 			return result;
 		}
 		
@@ -181,12 +167,7 @@ public class PrefixMatches implements Iterable<String>{
 	
 	@Override
 	public Iterator<String> iterator() {
-		Iterator<String> iter = new PrefixMatchesIterator(iteratorK, iteratorPrefix);
-		iteratorK = 3;
-		iteratorPrefix = "";
-		
-		return iter;
-		
+		return new PrefixMatchesIterator("", 3);
 	}
 
 }

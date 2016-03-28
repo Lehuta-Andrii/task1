@@ -2,15 +2,11 @@ package org.study.task1;
 
 import static org.junit.Assert.*;
 
-import java.io.BufferedReader;
-import java.io.FileNotFoundException;
-import java.io.FileReader;
-import java.io.IOException;
+import java.util.Iterator;
+import java.util.NoSuchElementException;
 import java.util.Set;
 import java.util.TreeSet;
-
 import org.junit.Before;
-import org.junit.BeforeClass;
 import org.junit.Test;
 
 /**
@@ -21,40 +17,8 @@ import org.junit.Test;
  */
 public class RWayTrieTest {
 
-	private static final String WORDS_FILE = "src/test/resources/wiktionary.txt";
 	private static final String AUX_STRING = "aaaaaaaaaaaaaaaaaa";
-	private static final String WORD_PATTERN = "[a-z]+";
-	private static final String SPACES_PATTERN = "[ \t]";
-	private static Set<String> testWords;
 	private RWayTrie trie;
-
-	/**
-	 * Initializes list of prepared words for testing
-	 */
-	@BeforeClass
-	public static void startUp() {
-
-		testWords = new TreeSet<String>();
-
-		try (BufferedReader fin = new BufferedReader(new FileReader(WORDS_FILE));) {
-
-			String line;
-
-			while ((line = fin.readLine()) != null) {
-				String[] words = line.trim().split(SPACES_PATTERN);
-				for (String word : words) {
-					if (word.length() >= 2 && word.matches(WORD_PATTERN)) {
-						testWords.add(word);
-					}
-				}
-			}
-		} catch (FileNotFoundException e) {
-			e.printStackTrace();
-		} catch (IOException e) {
-			e.printStackTrace();
-		}
-
-	}
 
 	/**
 	 * Fill trie for every test
@@ -69,8 +33,30 @@ public class RWayTrieTest {
 	 */
 	@Test
 	public void addMethodTest() {
-		fillTree();
-		assertEquals(trie.size(), testWords.size());
+		int expectedSize = 7;
+
+		trie.add(new Tuple("associated", 1));
+		trie.add(new Tuple("drill", 1));
+		trie.add(new Tuple("drink", 1));
+		trie.add(new Tuple("spelling", 1));
+		trie.add(new Tuple("respond", 1));
+		trie.add(new Tuple("seriousness", 1));
+		trie.add(new Tuple("singers", 1));
+
+		assertEquals(trie.size(), expectedSize);
+	}
+
+	/**
+	 * Checks add method of RWayTrie with empty word
+	 */
+	@Test
+	public void addMethodEmptyStringTest() {
+
+		int oldSize = trie.size();
+
+		trie.add(new Tuple("", 1));
+
+		assertEquals(trie.size(), oldSize);
 	}
 
 	/**
@@ -79,7 +65,26 @@ public class RWayTrieTest {
 	 */
 	@Test
 	public void deleteMethodTest() {
-		fillTree();
+
+		Set<String> testWords = new TreeSet<String>() {
+			{
+				add("associated");
+				add("drill");
+				add("drink");
+				add("spelling");
+				add("respond");
+				add("seriousness");
+				add("singers");
+			}
+		};
+
+		trie.add(new Tuple("associated", 1));
+		trie.add(new Tuple("drill", 1));
+		trie.add(new Tuple("drink", 1));
+		trie.add(new Tuple("spelling", 1));
+		trie.add(new Tuple("respond", 1));
+		trie.add(new Tuple("seriousness", 1));
+		trie.add(new Tuple("singers", 1));
 
 		for (String word : testWords) {
 			assertFalse(trie.delete(word + AUX_STRING));
@@ -99,7 +104,26 @@ public class RWayTrieTest {
 	 */
 	@Test
 	public void wordsMethodTest() {
-		fillTree();
+		Set<String> testWords = new TreeSet<String>() {
+			{
+				add("associated");
+				add("drill");
+				add("drink");
+				add("spelling");
+				add("respond");
+				add("seriousness");
+				add("singers");
+			}
+		};
+
+		trie.add(new Tuple("associated", 1));
+		trie.add(new Tuple("drill", 1));
+		trie.add(new Tuple("drink", 1));
+		trie.add(new Tuple("spelling", 1));
+		trie.add(new Tuple("respond", 1));
+		trie.add(new Tuple("seriousness", 1));
+		trie.add(new Tuple("singers", 1));
+
 		for (String word : trie.words()) {
 			assertTrue(testWords.contains(word));
 		}
@@ -111,7 +135,26 @@ public class RWayTrieTest {
 	 */
 	@Test
 	public void containsMethodTest() {
-		fillTree();
+		Set<String> testWords = new TreeSet<String>() {
+			{
+				add("associated");
+				add("drill");
+				add("drink");
+				add("spelling");
+				add("respond");
+				add("seriousness");
+				add("singers");
+			}
+		};
+
+		trie.add(new Tuple("associated", 1));
+		trie.add(new Tuple("drill", 1));
+		trie.add(new Tuple("drink", 1));
+		trie.add(new Tuple("spelling", 1));
+		trie.add(new Tuple("respond", 1));
+		trie.add(new Tuple("seriousness", 1));
+		trie.add(new Tuple("singers", 1));
+
 		for (String word : testWords) {
 			assertTrue(trie.contains(word));
 		}
@@ -119,6 +162,7 @@ public class RWayTrieTest {
 		for (String word : testWords) {
 			assertFalse(trie.contains(word + AUX_STRING));
 		}
+
 	}
 
 	/**
@@ -127,7 +171,25 @@ public class RWayTrieTest {
 	 */
 	@Test
 	public void wordWithPrefixMethodTest() {
-		fillTree();
+		Set<String> testWords = new TreeSet<String>() {
+			{
+				add("associated");
+				add("drill");
+				add("drink");
+				add("spelling");
+				add("respond");
+				add("seriousness");
+				add("singers");
+			}
+		};
+
+		trie.add(new Tuple("associated", 1));
+		trie.add(new Tuple("drill", 1));
+		trie.add(new Tuple("drink", 1));
+		trie.add(new Tuple("spelling", 1));
+		trie.add(new Tuple("respond", 1));
+		trie.add(new Tuple("seriousness", 1));
+		trie.add(new Tuple("singers", 1));
 
 		for (String word : testWords) {
 			for (String prefixWords : trie.wordsWithPrefix(word.substring(0, 2))) {
@@ -136,9 +198,11 @@ public class RWayTrieTest {
 		}
 	}
 
-	private void fillTree() {
-		for (String word : testWords) {
-			trie.add(new Tuple(word.toLowerCase(), word.length()));
-		}
+	@Test(expected = NoSuchElementException.class)
+	public void wordsMethodExceptionThrowTest() {
+
+		Iterator<String> iter = trie.words().iterator();
+		iter.next();
+
 	}
 }

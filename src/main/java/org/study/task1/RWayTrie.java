@@ -23,9 +23,6 @@ public class RWayTrie implements Trie, Iterable<String>{
 	private Node root;
 	private Alphabet alphabet;
 	
-	private Node iteratorRootNode;
-	private String iteratorPrefix;
-
 	/**
 	 * Private class that is used for representation of node trie structure.
 	 * Contains integer value as key of the nod and array of children nodes
@@ -87,8 +84,6 @@ public class RWayTrie implements Trie, Iterable<String>{
 		this.alphabet = alphabet;
 		SIZE = alphabet.size();
 		root = new Node();
-		iteratorRootNode = root;
-		iteratorPrefix = "";
 	}
 
 	/**
@@ -102,6 +97,10 @@ public class RWayTrie implements Trie, Iterable<String>{
 		Node tmp = root;
 		String word = tuple.getWord();
 
+		if(word == "") {
+			return;
+		}
+		
 		for (int i = 0; i < word.length(); i++) {
 			if (tmp.next[alphabet.position(word.charAt(i))] != null) {
 				tmp = tmp.next[alphabet.position(word.charAt(i))];
@@ -233,54 +232,6 @@ public class RWayTrie implements Trie, Iterable<String>{
 	@Override
 	public Iterable<String> words() {
 		return this;
-		//return wordsWithPrefix("");
-	}
-
-	/**
-	 * Helper method that collects all words with specified prefix in Queue
-	 * object.
-	 * 
-	 * @param x
-	 *            - node that contains all words with specified prefix
-	 * @param pref
-	 *            - specified prefix
-	 * @param queue
-	 *            - queue that will contain the words with specified prefix
-	 */
-	private void collect(Node x, String pref, Queue<String> queue) {
-		
-		if(x == null){
-			return;
-		}
-		
-		class Pair {
-			Node first;
-			String second;
-
-			public Pair(Node first, String second) {
-				this.first = first;
-				this.second = second;
-			}
-		}
-
-		Queue<Pair> nodes = new LinkedList<Pair>();
-
-		nodes.add(new Pair(x, pref));
-
-		while (!nodes.isEmpty()) {
-			Pair node = nodes.poll();
-
-			if (node.first.value != 0) {
-				queue.add(node.second);
-			}
-
-			for (int i = 0; i < node.first.next.length; i++) {
-				if (node.first.next[i] != null) {
-					nodes.add(new Pair(node.first.next[i], node.second + alphabet.charcter(i)));
-				}
-			}
-		}
-
 	}
 
 	/**
@@ -292,11 +243,14 @@ public class RWayTrie implements Trie, Iterable<String>{
 	 */
 	@Override
 	public Iterable<String> wordsWithPrefix(String pref) {
-		//Queue<String> q = new LinkedList<String>();
-		//collect(get(root, pref), pref, q);
-		iteratorRootNode = get(root, pref);
-		iteratorPrefix = pref;
-		return this;
+		return new Iterable<String>(){
+
+			@Override
+			public Iterator<String> iterator() {
+				return new RWayTrieIterator(get(root, pref), pref);
+			}
+			
+		};
 	}
 
 	/**
@@ -316,8 +270,10 @@ public class RWayTrie implements Trie, Iterable<String>{
 		private Queue<Node> nodes = new LinkedList<Node>();
 		
 		public RWayTrieIterator(Node root, String pref) {
-			nodes.add(root);
-			words.add(pref);
+			if(root != null && RWayTrie.this.trieSize != 0){
+				nodes.add(root);
+				words.add(pref);
+			}
 		}
 
 		@Override
@@ -356,13 +312,9 @@ public class RWayTrie implements Trie, Iterable<String>{
 	}
 	
 	
-	
 	@Override
 	public Iterator<String> iterator() {
-		Iterator<String> iter = new RWayTrieIterator(iteratorRootNode, iteratorPrefix);
-		iteratorRootNode = root;
-		iteratorPrefix = "";
-		return iter;
+		return new RWayTrieIterator(root, "");
 	}
 
 }
