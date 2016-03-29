@@ -1,10 +1,12 @@
-package org.study.task1;
+package org.study.task1.trie;
 
 import java.util.ConcurrentModificationException;
 import java.util.Iterator;
 import java.util.LinkedList;
 import java.util.NoSuchElementException;
 import java.util.Queue;
+
+import org.study.task1.trie.tuple.Tuple;
 
 /**
  * The RWayTrie class represents a table of words based on a symbol table of

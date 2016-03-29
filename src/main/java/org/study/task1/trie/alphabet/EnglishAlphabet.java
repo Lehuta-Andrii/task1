@@ -1,4 +1,7 @@
-package org.study.task1;
+package org.study.task1.trie.alphabet;
+
+import org.study.task1.trie.RWayTrie;
+import org.study.task1.trie.RWayTrie.Alphabet;
 
 /**
  * EngrlishAlphabet based on RWayTrie.Alphabet public interface and used as the

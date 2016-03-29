@@ -9,6 +9,9 @@ import java.util.Set;
 import java.util.TreeSet;
 import org.junit.Before;
 import org.junit.Test;
+import org.study.task1.trie.RWayTrie;
+import org.study.task1.trie.alphabet.EnglishAlphabet;
+import org.study.task1.trie.tuple.Tuple;
 
 /**
  * Class for testing of RWayTrie trie

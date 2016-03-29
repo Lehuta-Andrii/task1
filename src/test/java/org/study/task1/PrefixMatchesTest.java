@@ -18,6 +18,10 @@ import org.mockito.ArgumentMatcher;
 import org.mockito.InjectMocks;
 import org.mockito.Mock;
 import org.mockito.runners.MockitoJUnitRunner;
+import org.study.task1.trie.RWayTrie;
+import org.study.task1.trie.Trie;
+import org.study.task1.trie.alphabet.EnglishAlphabet;
+import org.study.task1.trie.tuple.Tuple;
 
 /**
  * Class for testing of PrefixMatches table

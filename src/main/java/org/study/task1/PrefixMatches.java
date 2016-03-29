@@ -3,6 +3,9 @@ package org.study.task1;
 import java.util.Iterator;
 import java.util.NoSuchElementException;
 
+import org.study.task1.trie.Trie;
+import org.study.task1.trie.tuple.Tuple;
+
 /**
  * The PrefixMatches class provides the function of auto completion for words of
  * English language. It is based on the use of Trie word table and provides add,
