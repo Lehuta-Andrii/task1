@@ -10,7 +10,7 @@ package org.study.task1;
 public class EnglishAlphabet implements RWayTrie.Alphabet {
 
 	private final int SIZE = 26;
-	
+
 	/**
 	 * Returns the size of alphabet
 	 * 
@@ -30,7 +30,13 @@ public class EnglishAlphabet implements RWayTrie.Alphabet {
 	 */
 	@Override
 	public int position(char character) {
-		return character - 0x61;
+		int pos = character - 0x61;
+
+		if (pos < 0 || pos >= SIZE) {
+			throw new ArrayIndexOutOfBoundsException();
+		}
+
+		return pos;
 	}
 
 	/**
@@ -42,6 +48,9 @@ public class EnglishAlphabet implements RWayTrie.Alphabet {
 	 */
 	@Override
 	public char charcter(int position) {
+		if (position < 0 || position >= SIZE) {
+			throw new ArrayIndexOutOfBoundsException();
+		}
 		return (char) (position + 0x61);
 	}
 

@@ -116,6 +116,12 @@ public class PrefixMatches implements Iterable<String>{
 		return wordsWithPrefix(pref, 3);
 	}
 
+	/**
+	 * Iterator for PrefixMatches table. Returns the k group of words
+	 * 
+	 * @author Andrii_Lehuta
+	 *
+	 */
 	private class PrefixMatchesIterator implements Iterator<String>{
 
 		private Iterator<String> RWayIterator;
@@ -165,6 +171,11 @@ public class PrefixMatches implements Iterable<String>{
 		
 	}
 	
+	/**
+	 * Returns iterator over all words of PrefixMatches
+	 * 
+	 * @return the iterator over all words of PrefixMatches
+	 */
 	@Override
 	public Iterator<String> iterator() {
 		return new PrefixMatchesIterator("", 3);

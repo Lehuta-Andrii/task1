@@ -1,5 +1,6 @@
 package org.study.task1;
 
+import java.util.ConcurrentModificationException;
 import java.util.Iterator;
 import java.util.LinkedList;
 import java.util.NoSuchElementException;
@@ -16,13 +17,14 @@ import java.util.Queue;
  * 
  * @author Andrii_Lehuta
  */
-public class RWayTrie implements Trie, Iterable<String>{
+public class RWayTrie implements Trie, Iterable<String> {
 
 	private static int SIZE; // Alphabet size
 	private int trieSize = 0; // Size of the trie
 	private Node root;
 	private Alphabet alphabet;
-	
+	private long version;
+
 	/**
 	 * Private class that is used for representation of node trie structure.
 	 * Contains integer value as key of the nod and array of children nodes
@@ -97,10 +99,10 @@ public class RWayTrie implements Trie, Iterable<String>{
 		Node tmp = root;
 		String word = tuple.getWord();
 
-		if(word == "") {
+		if (word == "") {
 			return;
 		}
-		
+
 		for (int i = 0; i < word.length(); i++) {
 			if (tmp.next[alphabet.position(word.charAt(i))] != null) {
 				tmp = tmp.next[alphabet.position(word.charAt(i))];
@@ -115,6 +117,7 @@ public class RWayTrie implements Trie, Iterable<String>{
 		}
 
 		tmp.value = tuple.getWeight();
+		version++;
 	}
 
 	/**
@@ -175,8 +178,12 @@ public class RWayTrie implements Trie, Iterable<String>{
 			root = new Node();
 		}
 
-		return trieSize - oldSize != 0;
+		if (trieSize - oldSize != 0) {
+			version++;
+			return true;
+		}
 
+		return false;
 	}
 
 	/**
@@ -243,13 +250,13 @@ public class RWayTrie implements Trie, Iterable<String>{
 	 */
 	@Override
 	public Iterable<String> wordsWithPrefix(String pref) {
-		return new Iterable<String>(){
+		return new Iterable<String>() {
 
 			@Override
 			public Iterator<String> iterator() {
-				return new RWayTrieIterator(get(root, pref), pref);
+				return new RWayTrieIterator(get(root, pref), pref, version);
 			}
-			
+
 		};
 	}
 
@@ -263,16 +270,23 @@ public class RWayTrie implements Trie, Iterable<String>{
 		return trieSize;
 	}
 
-	
-	private class RWayTrieIterator implements Iterator<String>{
+	/**
+	 * Iterator for Trie table. Walks the tree breadthways
+	 * 
+	 * @author Andrii_Lehuta
+	 *
+	 */
+	private class RWayTrieIterator implements Iterator<String> {
 
 		private Queue<String> words = new LinkedList<String>();
 		private Queue<Node> nodes = new LinkedList<Node>();
-		
-		public RWayTrieIterator(Node root, String pref) {
-			if(root != null && RWayTrie.this.trieSize != 0){
+		private long version;
+
+		public RWayTrieIterator(Node root, String pref, long version) {
+			if (root != null && RWayTrie.this.trieSize != 0) {
 				nodes.add(root);
 				words.add(pref);
+				this.version = version;
 			}
 		}
 
@@ -283,21 +297,25 @@ public class RWayTrie implements Trie, Iterable<String>{
 
 		@Override
 		public String next() {
-			
-			if(nodes.isEmpty()){
+
+			if (version != RWayTrie.this.version) {
+				throw new ConcurrentModificationException();
+			}
+
+			if (nodes.isEmpty()) {
 				throw new NoSuchElementException();
 			}
-			
+
 			String result = null;
-			
-			while(!nodes.isEmpty() && result == null) {
+
+			while (!nodes.isEmpty() && result == null) {
 				Node node = nodes.poll();
 				String tmpWord = words.poll();
 
-				if(node.value != 0){
+				if (node.value != 0) {
 					result = tmpWord;
 				}
-		
+
 				for (int i = 0; i < node.next.length; i++) {
 					if (node.next[i] != null) {
 						nodes.add(node.next[i]);
@@ -305,16 +323,20 @@ public class RWayTrie implements Trie, Iterable<String>{
 					}
 				}
 			}
-			
+
 			return result;
 		}
-		
+
 	}
-	
-	
+
+	/**
+	 * Returns iterator over all words of Trie
+	 * 
+	 * @return the iterator over all words of Trie
+	 */
 	@Override
 	public Iterator<String> iterator() {
-		return new RWayTrieIterator(root, "");
+		return new RWayTrieIterator(root, "", version);
 	}
 
 }

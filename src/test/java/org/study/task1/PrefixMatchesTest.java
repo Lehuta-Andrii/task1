@@ -72,10 +72,10 @@ public class PrefixMatchesTest {
 
 	/**
 	 * Checks delete method of PrefixMatches by filling it with prepared words
-	 * and tries to delete existing and non existing words
+	 * and tries to delete existing words
 	 */
 	@Test
-	public void deleteMethodTest() {
+	public void deleteMethodOnExistingWordsTest() {
 
 		dictionary.add("associated", "drill", "drink", "spelling", "respond", "seriousness", "singers");
 
@@ -92,23 +92,50 @@ public class PrefixMatchesTest {
 		};
 
 		for (String word : testWords) {
-			assertFalse(dictionary.delete(word + AUX_STRING));
-		}
-
-		for (String word : testWords) {
 			assertTrue(dictionary.delete(word));
 		}
 
 		assertEquals(dictionary.size(), 0);
+		
+	}
+	
+	/**
+	 * Checks delete method of PrefixMatches by filling it with prepared words
+	 * and tries to delete non existing words
+	 */
+	@Test
+	public void deleteMethodOnNonExistingWordsTest() {
 
+		int expectedSize = 7;
+		dictionary.add("associated", "drill", "drink", "spelling", "respond", "seriousness", "singers");
+		
+		
+		Set<String> testWords = new TreeSet<String>() {
+			{
+				add("associated");
+				add("drill");
+				add("drink");
+				add("spelling");
+				add("respond");
+				add("seriousness");
+				add("singers");
+			}
+		};
+
+		for (String word : testWords) {
+			assertFalse(dictionary.delete(word + AUX_STRING));
+		}
+		
+		assertEquals(dictionary.size(), expectedSize);
+		
 	}
 
 	/**
 	 * Checks contains method of PrefixMatches by filling it with prepared words
-	 * and testing if existing and non existing word exist
+	 * and testing if word exist in table
 	 */
 	@Test
-	public void containsMethodTest() {
+	public void containsMethodOnExistingWordsTest() {
 
 		dictionary.add("associated", "drill", "drink", "spelling", "respond", "seriousness", "singers");
 
@@ -128,11 +155,34 @@ public class PrefixMatchesTest {
 			assertTrue(dictionary.contains(word));
 		}
 
+	}
+
+	/**
+	 * Checks contains method of PrefixMatches by filling it with prepared words
+	 * and testing if existing and non existing word exist
+	 */
+	@Test
+	public void containsMethodOnNonExistingWordsTest() {
+
+		dictionary.add("associated", "drill", "drink", "spelling", "respond", "seriousness", "singers");
+
+		Set<String> testWords = new TreeSet<String>() {
+			{
+				add("associated");
+				add("drill");
+				add("drink");
+				add("spelling");
+				add("respond");
+				add("seriousness");
+				add("singers");
+			}
+		};
+
 		for (String word : testWords) {
 			assertFalse(dictionary.contains(word + AUX_STRING));
 		}
 	}
-
+	
 	/**
 	 * Checks wordWithPrefix method of PrefixMatches by filling it with prepared
 	 * words and testing if the size of batch of words with specified prefix is
