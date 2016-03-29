@@ -1,8 +1,6 @@
 package org.study.task1.trie.alphabet;
 
 import org.study.task1.trie.RWayTrie;
-import org.study.task1.trie.RWayTrie.Alphabet;
-
 /**
  * EngrlishAlphabet based on RWayTrie.Alphabet public interface and used as the
  * helper class to represent alphabet of English language
@@ -11,8 +9,8 @@ import org.study.task1.trie.RWayTrie.Alphabet;
  *
  */
 public class EnglishAlphabet implements RWayTrie.Alphabet {
-
-	private final int SIZE = 26;
+	private static final int SIZE = 26;
+	private static final int SHIFT = 0x61;
 
 	/**
 	 * Returns the size of alphabet
@@ -33,7 +31,7 @@ public class EnglishAlphabet implements RWayTrie.Alphabet {
 	 */
 	@Override
 	public int position(char character) {
-		int pos = character - 0x61;
+		int pos = character - SHIFT;
 
 		if (pos < 0 || pos >= SIZE) {
 			throw new ArrayIndexOutOfBoundsException();
@@ -50,11 +48,11 @@ public class EnglishAlphabet implements RWayTrie.Alphabet {
 	 * @return position in alphabet
 	 */
 	@Override
-	public char charcter(int position) {
+	public char character(int position) {
 		if (position < 0 || position >= SIZE) {
 			throw new ArrayIndexOutOfBoundsException();
 		}
-		return (char) (position + 0x61);
+		return (char) (position + SHIFT);
 	}
 
 }

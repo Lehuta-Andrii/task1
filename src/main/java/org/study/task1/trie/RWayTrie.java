@@ -21,7 +21,7 @@ import org.study.task1.trie.tuple.Tuple;
  */
 public class RWayTrie implements Trie, Iterable<String> {
 
-	private static int SIZE; // Alphabet size
+	private final int alphabetSize; // Alphabet size
 	private int trieSize = 0; // Size of the trie
 	private Node root;
 	private Alphabet alphabet;
@@ -36,9 +36,13 @@ public class RWayTrie implements Trie, Iterable<String> {
 	 */
 	private static class Node {
 
+		public Node(int alphabetSize) {
+			next = new Node[alphabetSize];
+		}
+
 		private int value;
 
-		private Node[] next = new Node[SIZE];
+		private Node[] next;
 
 	}
 
@@ -56,7 +60,7 @@ public class RWayTrie implements Trie, Iterable<String> {
 		 * 
 		 * @return the size of alphabet
 		 */
-		public int size();
+		int size();
 
 		/**
 		 * Return the position of specified symbol in alphabet
@@ -65,7 +69,7 @@ public class RWayTrie implements Trie, Iterable<String> {
 		 *            - specified symbol
 		 * @return position in alphabet
 		 */
-		public int position(char character);
+		int position(char character);
 
 		/**
 		 * Return the character from specified position in alphabet
@@ -74,7 +78,7 @@ public class RWayTrie implements Trie, Iterable<String> {
 		 *            - specified symbol
 		 * @return position in alphabet
 		 */
-		public char charcter(int position);
+		char character(int position);
 
 	}
 
@@ -86,8 +90,8 @@ public class RWayTrie implements Trie, Iterable<String> {
 	 */
 	public RWayTrie(Alphabet alphabet) {
 		this.alphabet = alphabet;
-		SIZE = alphabet.size();
-		root = new Node();
+		alphabetSize = alphabet.size();
+		root = new Node(alphabetSize);
 	}
 
 	/**
@@ -101,7 +105,7 @@ public class RWayTrie implements Trie, Iterable<String> {
 		Node tmp = root;
 		String word = tuple.getWord();
 
-		if (word == "") {
+		if (word.equals("")) {
 			return;
 		}
 
@@ -109,7 +113,7 @@ public class RWayTrie implements Trie, Iterable<String> {
 			if (tmp.next[alphabet.position(word.charAt(i))] != null) {
 				tmp = tmp.next[alphabet.position(word.charAt(i))];
 			} else {
-				tmp.next[alphabet.position(word.charAt(i))] = new Node();
+				tmp.next[alphabet.position(word.charAt(i))] = new Node(alphabetSize);
 				tmp = tmp.next[alphabet.position(word.charAt(i))];
 			}
 		}
@@ -177,7 +181,7 @@ public class RWayTrie implements Trie, Iterable<String> {
 
 		root = delete(root, word, 0);
 		if (root == null) {
-			root = new Node();
+			root = new Node(alphabetSize);
 		}
 
 		if (trieSize - oldSize != 0) {
@@ -321,7 +325,7 @@ public class RWayTrie implements Trie, Iterable<String> {
 				for (int i = 0; i < node.next.length; i++) {
 					if (node.next[i] != null) {
 						nodes.add(node.next[i]);
-						words.add(tmpWord + alphabet.charcter(i));
+						words.add(tmpWord + alphabet.character(i));
 					}
 				}
 			}
