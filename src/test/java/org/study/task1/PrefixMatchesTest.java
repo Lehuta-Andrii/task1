@@ -32,217 +32,344 @@ import org.study.task1.trie.tuple.Tuple;
 @RunWith(MockitoJUnitRunner.class)
 public class PrefixMatchesTest {
 
-	private static final String AUX_STRING = "aaaaaaaaaaaaaaaaaa";
-	private PrefixMatches dictionary;
+    private static final String AUX_STRING = "aaaaaaaaaaaaaaaaaa";
+    private PrefixMatches dictionary;
 
-	@Mock
-	private Trie mockTrie;
+    @Mock
+    private Trie mockTrie;
 
-	@InjectMocks
-	private PrefixMatches mockPrefixMatches;
+    @InjectMocks
+    private PrefixMatches mockPrefixMatches;
 
-	/**
-	 * Fill table for every test
-	 */
-	@Before
-	public void trieInit() {
-		dictionary = new PrefixMatches(new RWayTrie(new EnglishAlphabet()));
+    /**
+     * Fill table for every test
+     */
+    @Before
+    public void trieInit() {
+	dictionary = new PrefixMatches(new RWayTrie(new EnglishAlphabet()));
+    }
+
+    /**
+     * Test if PrefixMatches calls trie add method fixed number of times
+     */
+    @Test
+    public void prefixMatchesAddMehtodCallsTrieAddThreeTimes() {
+	mockPrefixMatches.add("one", "two", "three");
+	verify(mockTrie, times(3)).add((Tuple) argThat(new ArgumentMatcher<Tuple>() {
+	    public boolean matches(Object list) {
+		return list.getClass().equals(Tuple.class);
+	    }
+	}));
+    }
+
+    /**
+     * Checks add method of PrefixMatches by filling it with prepared words
+     */
+    @Test
+    public void addMethodOnGroupOfWordsTest() {
+
+	int expectedSize = 7;
+	dictionary.add("associated", "drill", "drink", "spelling", "respond", "seriousness", "singers");
+
+	assertEquals(dictionary.size(), expectedSize);
+    }
+
+    /**
+     * Checks add method of PrefixMatches by adding one word
+     */
+    @Test
+    public void addMethodOneWordTest() {
+
+	int expectedSize = 1;
+	dictionary.add("associated");
+
+	assertEquals(dictionary.size(), expectedSize);
+    }
+
+    /**
+     * Checks add method of PrefixMatches by adding empty string
+     */
+    @Test
+    public void addMethodEmptyStringTest() {
+
+	int expectedSize = 0;
+	dictionary.add("");
+
+	assertEquals(dictionary.size(), expectedSize);
+    }
+
+    /**
+     * Checks delete method of PrefixMatches by filling it with prepared words
+     * and tries to delete existing words
+     */
+    @Test
+    public void deleteMethodOnExistingWordsTest() {
+
+	dictionary.add("associated", "drill", "drink", "spelling", "respond", "seriousness", "singers");
+
+	Set<String> testWords = new TreeSet<String>() {
+	    {
+		add("associated");
+		add("drill");
+		add("drink");
+		add("spelling");
+		add("respond");
+		add("seriousness");
+		add("singers");
+	    }
+	};
+
+	for (String word : testWords) {
+	    assertTrue(dictionary.delete(word));
 	}
 
-	/**
-	 * Test if PrefixMatches calls trie add method fixed number of times
-	 */
-	@Test
-	public void prefixMatchesAddMehtodCallsTrieAddThreeTimes() {
-		mockPrefixMatches.add("one", "two", "three");
-		verify(mockTrie, times(3)).add((Tuple) argThat(new ArgumentMatcher<Tuple>() {
-			public boolean matches(Object list) {
-				return list.getClass().equals(Tuple.class);
-			}
-		}));
+	assertEquals(dictionary.size(), 0);
+
+    }
+
+    /**
+     * Checks delete method of PrefixMatches on one word
+     */
+    @Test
+    public void deleteMethodOnOneWordTest() {
+
+	String word = "associated";
+
+	dictionary.add(word);
+
+	assertTrue(dictionary.delete(word));
+
+	assertEquals(dictionary.size(), 0);
+
+    }
+
+    /**
+     * Checks delete method of PrefixMatches by filling it with prepared words
+     * and tries to delete non existing words
+     */
+    @Test
+    public void deleteMethodOnNonExistingWordsTest() {
+
+	int expectedSize = 7;
+	dictionary.add("associated", "drill", "drink", "spelling", "respond", "seriousness", "singers");
+
+	Set<String> testWords = new TreeSet<String>() {
+	    {
+		add("associated");
+		add("drill");
+		add("drink");
+		add("spelling");
+		add("respond");
+		add("seriousness");
+		add("singers");
+	    }
+	};
+
+	for (String word : testWords) {
+	    assertFalse(dictionary.delete(word + AUX_STRING));
 	}
 
-	/**
-	 * Checks add method of PrefixMatches by filling it with prepared words
-	 */
-	@Test
-	public void addMethodTest() {
+	assertEquals(dictionary.size(), expectedSize);
 
-		int expectedSize = 7;
-		dictionary.add("associated", "drill", "drink", "spelling", "respond", "seriousness", "singers");
+    }
 
-		assertEquals(dictionary.size(), expectedSize);
+    /**
+     * Checks contains method of PrefixMatches on one word
+     */
+    @Test
+    public void containsMethodOnOneWordTest() {
+
+	String word = "associated";
+
+	dictionary.add(word);
+
+	assertTrue(dictionary.contains(word));
+
+    }
+
+    /**
+     * Checks contains method of PrefixMatches on empty line
+     */
+    @Test
+    public void containsMethodOnEmptylineTest() {
+
+	String word = "";
+
+	dictionary.add(word);
+
+	assertFalse(dictionary.contains(word));
+
+    }
+
+    /**
+     * Checks contains method of PrefixMatches by filling it with prepared words
+     * and testing if word exist in table
+     */
+    @Test
+    public void containsMethodOnExistingWordsTest() {
+
+	dictionary.add("associated", "drill", "drink", "spelling", "respond", "seriousness", "singers");
+
+	Set<String> testWords = new TreeSet<String>() {
+	    {
+		add("associated");
+		add("drill");
+		add("drink");
+		add("spelling");
+		add("respond");
+		add("seriousness");
+		add("singers");
+	    }
+	};
+
+	for (String word : testWords) {
+	    assertTrue(dictionary.contains(word));
 	}
 
-	/**
-	 * Checks delete method of PrefixMatches by filling it with prepared words
-	 * and tries to delete existing words
-	 */
-	@Test
-	public void deleteMethodOnExistingWordsTest() {
+    }
 
-		dictionary.add("associated", "drill", "drink", "spelling", "respond", "seriousness", "singers");
+    /**
+     * Checks contains method of PrefixMatches by filling it with prepared words
+     * and testing if existing and non existing word exist
+     */
+    @Test
+    public void containsMethodOnNonExistingWordsTest() {
 
-		Set<String> testWords = new TreeSet<String>() {
-			{
-				add("associated");
-				add("drill");
-				add("drink");
-				add("spelling");
-				add("respond");
-				add("seriousness");
-				add("singers");
-			}
-		};
+	dictionary.add("associated", "drill", "drink", "spelling", "respond", "seriousness", "singers");
 
-		for (String word : testWords) {
-			assertTrue(dictionary.delete(word));
-		}
+	Set<String> testWords = new TreeSet<String>() {
+	    {
+		add("associated");
+		add("drill");
+		add("drink");
+		add("spelling");
+		add("respond");
+		add("seriousness");
+		add("singers");
+	    }
+	};
 
-		assertEquals(dictionary.size(), 0);
-		
+	for (String word : testWords) {
+	    assertFalse(dictionary.contains(word + AUX_STRING));
 	}
-	
-	/**
-	 * Checks delete method of PrefixMatches by filling it with prepared words
-	 * and tries to delete non existing words
-	 */
-	@Test
-	public void deleteMethodOnNonExistingWordsTest() {
+    }
 
-		int expectedSize = 7;
-		dictionary.add("associated", "drill", "drink", "spelling", "respond", "seriousness", "singers");
-		
-		
-		Set<String> testWords = new TreeSet<String>() {
-			{
-				add("associated");
-				add("drill");
-				add("drink");
-				add("spelling");
-				add("respond");
-				add("seriousness");
-				add("singers");
-			}
-		};
+    /**
+     * Checks wordWithPrefix method of PrefixMatches by filling it with prepared
+     * words and testing if the size of batch of words with specified prefix is
+     * correct
+     */
+    @Test
+    public void wordWithPrefixMethodGroupSizeTest() {
 
-		for (String word : testWords) {
-			assertFalse(dictionary.delete(word + AUX_STRING));
-		}
-		
-		assertEquals(dictionary.size(), expectedSize);
-		
+	int counter = 0;
+	int expectedNumberOfWords = 7;
+
+	String prefix = "en";
+	dictionary.add("en", "end", "ends", "envy", "ended", "entry", "envoy", "enable", "ending", "enabled", "endless",
+		"endowed", "encamped", "enclosed", "encoding");
+
+	for (String word : dictionary.wordsWithPrefix(prefix, 4)) {
+	    counter++;
 	}
 
-	/**
-	 * Checks contains method of PrefixMatches by filling it with prepared words
-	 * and testing if word exist in table
-	 */
-	@Test
-	public void containsMethodOnExistingWordsTest() {
+	assertTrue(counter == expectedNumberOfWords);
+    }
 
-		dictionary.add("associated", "drill", "drink", "spelling", "respond", "seriousness", "singers");
+    /**
+     * Checks wordWithPrefix method of PrefixMatches with zero k parameter
+     */
+    @Test
+    public void wordWithPrefixMethodZeroKTest() {
+	String prefix = "en";
+	dictionary.add("en", "end", "ends", "envy", "ended", "entry", "envoy", "enable", "ending", "enabled", "endless",
+		"endowed", "encamped", "enclosed", "encoding");
 
-		Set<String> testWords = new TreeSet<String>() {
-			{
-				add("associated");
-				add("drill");
-				add("drink");
-				add("spelling");
-				add("respond");
-				add("seriousness");
-				add("singers");
-			}
-		};
+	Iterator<String> iterator = dictionary.wordsWithPrefix(prefix, 0).iterator();
 
-		for (String word : testWords) {
-			assertTrue(dictionary.contains(word));
-		}
+	assertFalse(iterator.hasNext());
+    }
 
-	}
+    /**
+     * Checks wordWithPrefix method of PrefixMatches with small prefix
+     */
+    @Test
+    public void wordWithPrefixMethodSmallPrefixTest() {
+	String prefix = "e";
+	dictionary.add("en", "end", "ends", "envy", "ended", "entry", "envoy", "enable", "ending", "enabled", "endless",
+		"endowed", "encamped", "enclosed", "encoding");
 
-	/**
-	 * Checks contains method of PrefixMatches by filling it with prepared words
-	 * and testing if existing and non existing word exist
-	 */
-	@Test
-	public void containsMethodOnNonExistingWordsTest() {
+	Iterator<String> iterator = dictionary.wordsWithPrefix(prefix).iterator();
 
-		dictionary.add("associated", "drill", "drink", "spelling", "respond", "seriousness", "singers");
+	assertFalse(iterator.hasNext());
+    }
 
-		Set<String> testWords = new TreeSet<String>() {
-			{
-				add("associated");
-				add("drill");
-				add("drink");
-				add("spelling");
-				add("respond");
-				add("seriousness");
-				add("singers");
-			}
-		};
+    /**
+     * Checks wordWithPrefix method of PrefixMatches by filling it with prepared
+     * words and testing if the returned words are correct
+     */
+    @Test
+    public void wordWithPrefixMethodWordsCheckTest() {
 
-		for (String word : testWords) {
-			assertFalse(dictionary.contains(word + AUX_STRING));
-		}
-	}
-	
-	/**
-	 * Checks wordWithPrefix method of PrefixMatches by filling it with prepared
-	 * words and testing if the size of batch of words with specified prefix is
-	 * correct
-	 */
-	@Test
-	public void wordWithPrefixMethodGroupSizeTest() {
+	String prefix = "en";
+	String[] expectedWords = { "en", "end", "ends", "envy", "ended", "entry", "envoy" };
 
-		int counter = 0;
-		int expectedNumberOfWords = 7;
+	dictionary.add("en", "end", "ends", "envy", "ended", "entry", "envoy", "enable", "ending", "enabled", "endless",
+		"endowed", "encamped", "enclosed", "encoding");
 
-		String prefix = "en";
-		dictionary.add("en", "end", "ends", "envy", "ended", "entry", "envoy", "enable", "ending", "enabled", "endless",
-				"endowed", "encamped", "enclosed", "encoding");
+	Iterator<String> iter = dictionary.wordsWithPrefix(prefix, 4).iterator();
+	assertEquals(iter.next(), expectedWords[0]);
+	assertEquals(iter.next(), expectedWords[1]);
+	assertEquals(iter.next(), expectedWords[2]);
+	assertEquals(iter.next(), expectedWords[3]);
+	assertEquals(iter.next(), expectedWords[4]);
+	assertEquals(iter.next(), expectedWords[5]);
+	assertEquals(iter.next(), expectedWords[6]);
 
-		for (String word : dictionary.wordsWithPrefix(prefix, 4)) {
-			counter++;
-		}
+    }
 
-		assertTrue(counter == expectedNumberOfWords);
-	}
+    /**
+     * Check if dictionary throws exception if it is empty
+     */
+    @Test(expected = NoSuchElementException.class)
+    public void wordWithPrefixMethodExceptionTest() {
 
-	/**
-	 * Checks wordWithPrefix method of PrefixMatches by filling it with prepared
-	 * words and testing if the returned words are correct
-	 */
-	@Test
-	public void wordWithPrefixMethodWordsCheckTest() {
+	Iterator<String> iter = dictionary.wordsWithPrefix("any").iterator();
 
-		String prefix = "en";
-		String[] expectedWords = { "en", "end", "ends", "envy", "ended", "entry", "envoy" };
+	iter.next();
 
-		dictionary.add("en", "end", "ends", "envy", "ended", "entry", "envoy", "enable", "ending", "enabled", "endless",
-				"endowed", "encamped", "enclosed", "encoding");
+    }
 
-		Iterator<String> iter = dictionary.wordsWithPrefix(prefix, 4).iterator();
-		assertEquals(iter.next(), expectedWords[0]);
-		assertEquals(iter.next(), expectedWords[1]);
-		assertEquals(iter.next(), expectedWords[2]);
-		assertEquals(iter.next(), expectedWords[3]);
-		assertEquals(iter.next(), expectedWords[4]);
-		assertEquals(iter.next(), expectedWords[5]);
-		assertEquals(iter.next(), expectedWords[6]);
+    /**
+     * Checks wordWithPrefix iterator on group of words
+     */
+    @Test
+    public void iteratorOnGroupOfWordsCheckTest() {
 
-	}
+	String[] expectedWords = { "en", "end", "ends", "envy", "ended", "entry", "envoy" };
 
-	/**
-	 * Check if dictionary throws exception if it is empty
-	 */
-	@Test(expected = NoSuchElementException.class)
-	public void wordWithPrefixMethodExceptionTest() {
+	dictionary.add("en", "end", "ends", "envy", "ended", "entry", "envoy");
 
-		Iterator<String> iter = dictionary.wordsWithPrefix("").iterator();
+	Iterator<String> iter = dictionary.iterator();
+	assertEquals(iter.next(), expectedWords[0]);
+	assertEquals(iter.next(), expectedWords[1]);
+	assertEquals(iter.next(), expectedWords[2]);
+	assertEquals(iter.next(), expectedWords[3]);
+	assertEquals(iter.next(), expectedWords[4]);
+	assertEquals(iter.next(), expectedWords[5]);
+	assertEquals(iter.next(), expectedWords[6]);
 
-		iter.next();
+    }
 
-	}
+    /**
+     * Checks wordWithPrefix iterator on empty dictionary
+     */
+    @Test(expected = NoSuchElementException.class)
+    public void iteratorOnEmptyTest() {
+
+	Iterator<String> iter = dictionary.iterator();
+	iter.next();
+
+    }
 
 }

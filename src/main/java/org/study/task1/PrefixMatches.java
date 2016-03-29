@@ -20,169 +20,178 @@ import org.study.task1.trie.tuple.Tuple;
  */
 public class PrefixMatches implements Iterable<String> {
 
-	private static final int DEFAULTK = 3;
-	private Trie trie;
+    private static final int DEFAULTK = 3;
+    private static final int MIN_PREFIX = 2;
+    private Trie trie;
 
-	/**
-	 * Consrtucts table with the help of specified trie
-	 * 
-	 * @param trie
-	 *            - specified trie
-	 */
-	public PrefixMatches(Trie trie) {
-		this.trie = trie;
-	}
+    /**
+     * Consrtucts table with the help of specified trie
+     * 
+     * @param trie
+     *            - specified trie
+     */
+    public PrefixMatches(Trie trie) {
+	this.trie = trie;
+    }
 
-	/**
-	 * Adds the specified array of words to this table
-	 * 
-	 * @param strings
-	 *            - the specified array of words
-	 * @return the number of added words
-	 */
-	public int add(String... strings) {
-		int oldSize = trie.size();
+    /**
+     * Adds the specified array of words to this table
+     * 
+     * @param strings
+     *            - the specified array of words
+     * @return the number of added words
+     */
+    public int add(String... strings) {
+	int oldSize = trie.size();
 
-		for (String string : strings) {
-			String[] words = string.split(" ");
+	for (String string : strings) {
+	    String[] words = string.split(" ");
 
-			for (String word : words) {
-				if (word.length() >= 2) {
-					trie.add(new Tuple(word, word.length()));
-				}
-			}
+	    for (String word : words) {
+		if (word.length() >= 2) {
+		    trie.add(new Tuple(word, word.length()));
 		}
-
-		return trie.size() - oldSize;
+	    }
 	}
 
-	/**
-	 * Returns true if table contains the specified word.
-	 * 
-	 * @param word
-	 *            - word whose presence in this table to be tested
-	 * @return true if this table contains the specified word
-	 */
-	public boolean contains(String word) {
-		return trie.contains(word);
-	}
+	return trie.size() - oldSize;
+    }
 
-	/**
-	 * Removes the specified word in this table.
-	 * 
-	 * @param word
-	 *            - the specified word
-	 * @return true if the specified word is deleted
-	 */
-	public boolean delete(String word) {
-		return trie.delete(word);
-	}
+    /**
+     * Returns true if table contains the specified word.
+     * 
+     * @param word
+     *            - word whose presence in this table to be tested
+     * @return true if this table contains the specified word
+     */
+    public boolean contains(String word) {
+	return trie.contains(word);
+    }
 
-	/**
-	 * Returns the size of table
-	 * 
-	 * @return the size of table
-	 */
-	public int size() {
-		return trie.size();
-	}
+    /**
+     * Removes the specified word in this table.
+     * 
+     * @param word
+     *            - the specified word
+     * @return true if the specified word is deleted
+     */
+    public boolean delete(String word) {
+	return trie.delete(word);
+    }
 
-	/**
-	 * Returns group of words that contains the specified prefix
-	 * 
-	 * @param pref
-	 *            - the specified prefix
-	 * @param k
-	 *            - number of groups to return
-	 * @return iterable object that contains k or less group of words
-	 */
-	public Iterable<String> wordsWithPrefix(String pref, int k) {
+    /**
+     * Returns the size of table
+     * 
+     * @return the size of table
+     */
+    public int size() {
+	return trie.size();
+    }
 
-		return new Iterable<String>() {
+    /**
+     * Returns group of words that contains the specified prefix
+     * 
+     * @param pref
+     *            - the specified prefix
+     * @param k
+     *            - number of groups to return
+     * @return iterable object that contains k or less group of words
+     */
+    public Iterable<String> wordsWithPrefix(String pref, int k) {
 
-			public Iterator<String> iterator() {
-				return new PrefixMatchesIterator(pref, k, trie);
-			}
+	return new Iterable<String>() {
 
-		};
-	}
-
-	/**
-	 * Returns group of words that contains the specified prefix
-	 * 
-	 * @param pref
-	 *            - the specified prefix
-	 * @param k
-	 *            - number of groups to return
-	 * @return iterable object that contains k or less group of words
-	 */
-	public Iterable<String> wordsWithPrefix(String pref) {
-		return wordsWithPrefix(pref, DEFAULTK);
-	}
-
-	/**
-	 * Iterator for PrefixMatches table. Returns the k group of words
-	 * 
-	 * @author Andrii_Lehuta
-	 *
-	 */
-	private static class PrefixMatchesIterator implements Iterator<String> {
-
-		private Iterator<String> rwayIterator;
-		private String currentWord = "";
-		private String nextWord = "";
-		private int k;
-
-		public PrefixMatchesIterator(String pref, int k, Trie trie) {
-			rwayIterator = trie.wordsWithPrefix(pref).iterator();
-			this.k = k;
-
-			if (rwayIterator.hasNext()) {
-				currentWord = rwayIterator.next();
-			} else {
-				this.k = 0;
-			}
+	    public Iterator<String> iterator() {
+		if (pref.length() < MIN_PREFIX) {
+		    return new PrefixMatchesIterator(pref, 0, trie);
+		} else {
+		    return new PrefixMatchesIterator(pref, k, trie);
 		}
+	    }
 
-		@Override
-		public boolean hasNext() {
-			return k > 0;
-		}
+	};
+    }
 
-		@Override
-		public String next() {
+    /**
+     * Returns group of words that contains the specified prefix
+     * 
+     * @param pref
+     *            - the specified prefix
+     * @param k
+     *            - number of groups to return
+     * @return iterable object that contains k or less group of words
+     */
+    public Iterable<String> wordsWithPrefix(String pref) {
+	if (pref.length() >= MIN_PREFIX) {
+	    return wordsWithPrefix(pref, DEFAULTK);
+	} else {
+	    return wordsWithPrefix(pref, 0);
+	}
+    }
 
-			if (k <= 0) {
-				throw new NoSuchElementException();
-			}
+    /**
+     * Iterator for PrefixMatches table. Returns the k group of words
+     * 
+     * @author Andrii_Lehuta
+     *
+     */
+    private static class PrefixMatchesIterator implements Iterator<String> {
 
-			if (rwayIterator.hasNext()) {
-				nextWord = rwayIterator.next();
+	private Iterator<String> rwayIterator;
+	private String currentWord = "";
+	private String nextWord = "";
+	private int k;
 
-				if (currentWord.length() < nextWord.length()) {
-					k--;
-				}
+	public PrefixMatchesIterator(String pref, int k, Trie trie) {
+	    rwayIterator = trie.wordsWithPrefix(pref).iterator();
+	    this.k = k;
 
-			} else {
-				k = 0;
-			}
-
-			String result = currentWord;
-			currentWord = nextWord;
-
-			return result;
-		}
-
+	    if (rwayIterator.hasNext()) {
+		currentWord = rwayIterator.next();
+	    } else {
+		this.k = 0;
+	    }
 	}
 
-	/**
-	 * Returns iterator over all words of PrefixMatches
-	 * 
-	 * @return the iterator over all words of PrefixMatches
-	 */
 	@Override
-	public Iterator<String> iterator() {
-		return new PrefixMatchesIterator("", DEFAULTK, trie);
+	public boolean hasNext() {
+	    return k > 0;
 	}
+
+	@Override
+	public String next() {
+
+	    if (k <= 0) {
+		throw new NoSuchElementException();
+	    }
+
+	    if (rwayIterator.hasNext()) {
+		nextWord = rwayIterator.next();
+
+		if (currentWord.length() < nextWord.length()) {
+		    k--;
+		}
+
+	    } else {
+		k = 0;
+	    }
+
+	    String result = currentWord;
+	    currentWord = nextWord;
+
+	    return result;
+	}
+
+    }
+
+    /**
+     * Returns iterator over all words of PrefixMatches
+     * 
+     * @return the iterator over all words of PrefixMatches
+     */
+    @Override
+    public Iterator<String> iterator() {
+	return trie.wordsWithPrefix("").iterator();
+    }
 
 }

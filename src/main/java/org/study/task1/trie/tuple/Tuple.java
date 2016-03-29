@@ -7,26 +7,26 @@ package org.study.task1.trie.tuple;
  *
  */
 public class Tuple {
-	private String word;
-	private int weight;
+    private String word;
+    private int weight;
 
-	public Tuple(String word, int weight) {
-		this.word = word;
-		this.weight = weight;
-	}
+    public Tuple(String word, int weight) {
+	this.word = word;
+	this.weight = weight;
+    }
 
-	/**
-	 * @return the word
-	 */
-	public String getWord() {
-		return word;
-	}
+    /**
+     * @return the word
+     */
+    public String getWord() {
+	return word;
+    }
 
-	/**
-	 * @return the weight
-	 */
-	public int getWeight() {
-		return weight;
-	}
+    /**
+     * @return the weight
+     */
+    public int getWeight() {
+	return weight;
+    }
 
 }
